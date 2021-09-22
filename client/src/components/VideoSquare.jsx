@@ -16,24 +16,24 @@ const VideoSquare = (props) => {
         { urls: 'stun:stun4.l.google.com:19302' },
     ]};
     const [socket] = useState(() => io(':8000'));
-    let rtcPeerConnection;
-    let localStream;
-    let remoteStream;
-    let roomId;
-    let callHost;
 
     useEffect(() => {
-
-        roomId = props.roomInfo._id;
+        let rtcPeerConnection;
+        let localStream;
+        let remoteStream;
+        let callHost = props.roomInfo.host;
+        let roomId = props.roomInfo._id;
 
         setLocalStream(constraints);
 
         socket.on('call', async () => {
             if (callHost === Cookies.get('userName')) {
+                console.log('client call');
                 rtcPeerConnection = new RTCPeerConnection(configuration);
                 addLocalTracks(rtcPeerConnection);
                 rtcPeerConnection.ontrack = setRemoteStream;
                 rtcPeerConnection.onicecandidate = sendIceCandidate;
+                
                 await createOffer(rtcPeerConnection);
             };
         });
@@ -46,6 +46,7 @@ const VideoSquare = (props) => {
                 rtcPeerConnection.onicecandidate = sendIceCandidate;
                 rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
                 await createAnswer(rtcPeerConnection);
+                console.log('client offer')
             };
         });
 
@@ -125,10 +126,13 @@ const VideoSquare = (props) => {
             };
         };
 
+        // Finally we emit the call event.
+        socket.emit('call', roomId);
+
     }, []);
 
     return (
-        <div>
+        <>
             <video id='remoteVid' autoPlay>
 
             </video>
@@ -136,7 +140,7 @@ const VideoSquare = (props) => {
             <video id='localVid' autoPlay>
 
             </video>
-        </div>
+        </>
     );
 };
 

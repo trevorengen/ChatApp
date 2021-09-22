@@ -86,7 +86,6 @@ module.exports.addRoomToUser = (req, res) => {
 module.exports.updateUserSocket = (req, res) => {
     User.updateOne({ userName: req.body.userName }, { currentSocket: req.body.socket }, { new: true })
         .then(user => {
-            console.log(user);
             res.json({ user: user });
         })
         .catch(err => res.json({ error: err }));

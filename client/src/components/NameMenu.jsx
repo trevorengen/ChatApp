@@ -56,6 +56,7 @@ const NameMenu = (props) => {
                 } else {
                     setSnack(true);
                     handleClose();
+                    history.push('/chatroom/' + rooms.data.room._id);
                 }
             })
             .catch(err => console.log(err));
@@ -67,6 +68,7 @@ const NameMenu = (props) => {
             .then(user => {
                 const userInfo = user.data.user;
                 socket.emit('start_call', { userInfo: userInfo, caller: Cookies.get('userName') });
+
             })
             .catch(err => console.log(err));
     }

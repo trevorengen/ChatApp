@@ -41,23 +41,26 @@ io.on('connection', socket => {
     });
 
     socket.on('start_call', (data) => {
-        console.log(data);
         socket.to(data.userInfo.currentSocket).emit('recieving_call', data.caller);
     });
 
     socket.on('call', (roomId) => {
+        console.log(`Server call on ${roomId}.`);
         socket.broadcast.to(roomId).emit('call');
     });
 
     socket.on('offer', (event) => {
-        socket.broadcast.to(event.roomId).emit('answer', event.sdp);
+        console.log(`Server offer of: ${event}.`);
+        socket.broadcast.to(event.roomId).emit('offer', event.sdp);
     });
 
     socket.on('answer', (event) => {
+        console.log(`Server answer of: ${event}.`);
         socket.broadcast.to(event.roomId).emit('answer', event.sdp);
     });
 
     socket.on('ice_candidate', (event) => {
+        console.log(`Server new ice candidate: ${event}.`);
         socket.broadcast.to(event.roomId).emit('ice_candidate', event);
     });
 });

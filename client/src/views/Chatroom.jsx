@@ -52,7 +52,10 @@ const Chatroom = (props) => {
 
     useEffect(() => {
         axios.get('http://localhost:8000/room/' + id, { withCredentials: true })
-            .then(room => setRoomInfo(room.data.room))
+            .then(room => {
+                setRoomInfo(room.data.room);
+                console.log(room.data.room);
+            })
             .catch(err => console.log(err));
 
         axios.get('http://localhost:8000/message/getmessages/' + id, { withCredentials: true })
@@ -88,7 +91,7 @@ const Chatroom = (props) => {
             console.log(data);
         });
         socket.emit('join', id);
-
+        
         return () => socket.disconnect(true);
     }, [id, socket]);
 
@@ -101,9 +104,10 @@ const Chatroom = (props) => {
             <CreateRoom newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen} setOpen={setOpen} />
             <NavDrawer open={open} setOpen={setOpen} userRooms={userRooms} setUserRooms={setUserRooms}
                 isLoggedIn={isLoggedIn} newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen} />
-            <Container maxWidth='lg'>
-                <Grid>
-                    {roomInfo.isDm ? <VideoSquare roomInfo={roomInfo} /> : ''}
+            <Container maxWidth='xlg'>
+                <Grid container spacing={3}>
+                    {roomInfo.isDm ? (<Grid item xlg={2} lg={4} md={6} sm={8} xs={8}><VideoSquare style={{marginRight: '30px'}} roomInfo={roomInfo} /></Grid>) : ''}
+                    <Grid item xlg={roomInfo.isDm ? 12 : 10} lg={roomInfo.isDm ? 8 : 12} md={roomInfo.isDm ? 6 : 12} sm={roomInfo.isDm ? 4 : 12} xs={roomInfo.isDm ? 4 : 12}>
                     <Box 
                         style={{minHeight: '600px', minWidth: '300px',
                         backgroundColor: '#dce7e8', maxHeight: '600px',
@@ -115,7 +119,7 @@ const Chatroom = (props) => {
                                 justifyContent='space-evenly'
                                 alignItems='stretch'
                                 spacing={2}
-                                style={{}}>
+                            >
                                     {allMessages.slice(0,40).map((message, index) => {
                                         return (<Item key={index}>
                                             <h4 style={{marginLeft: '5px', display: 'flex', flexFlow: 'row nowrap', alignItems: 'center'}}>
@@ -141,7 +145,8 @@ const Chatroom = (props) => {
                                     <Button variant='contained' onClick={e => handleSubmit(e)}>Submit</Button>
                                     </InputAdornment>,
                             }}
-                        />           
+                        />   
+                        </Grid>        
                 </Grid>
             </Container>
             <CallDialog
