@@ -9,9 +9,10 @@ import NavBar from '../components/NavBar';
 import NavDrawer from '../components/NavDrawer';
 import axios from 'axios';
 import io from 'socket.io-client';
+import CreateRoom from '../components/CreateRoom';
 import Cookies from 'js-cookie';
 import { useParams } from 'react-router';
-import VideoSquare from '../components/VideoSquare';
+import NameMenu from '../components/NameMenu';
 
 const Chatroom = (props) => {
 
@@ -31,6 +32,7 @@ const Chatroom = (props) => {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [count, setCount] = useState(0);
     const [userRooms, setUserRooms] = useState([]);
+    const [roomInfo, setRoomInfo] = useState({});
     const { id } = useParams();
 
     const handleSubmit = (e) => {
@@ -45,6 +47,10 @@ const Chatroom = (props) => {
     };
 
     useEffect(() => {
+        axios.get('http://localhost:8000/room/' + id, { withCredentials: true })
+            .then(room => setRoomInfo(room.data.room))
+            .catch(err => console.log(err));
+
         axios.get('http://localhost:8000/message/getmessages/' + id, {withCredentials: true})
             .then(messages => {
                 setAllMessages(messages.data.messages.reverse())
@@ -53,6 +59,7 @@ const Chatroom = (props) => {
 
         socket.disconnect(true);
         socket.connect();
+
         socket.on('recieveMessage', (data) => {
             console.log(data);
             axios.get('http://localhost:8000/message/getmessages/' + data, {withCredentials: true})
@@ -61,7 +68,12 @@ const Chatroom = (props) => {
                 })
                 .catch(err => console.log(err.response));
         });
+
+        socket.on('recieveDm', (data) => {
+            console.log(data);
+        });
         socket.emit('join', id);
+
 
         return () => socket.disconnect(true);
     }, [id, socket]);
@@ -71,22 +83,13 @@ const Chatroom = (props) => {
             <NavBar pageHeader={''} setOpen={setOpen} open={open} setLoginOpen={setLoginOpen} loginOpen={loginOpen} 
             registerOpen={registerOpen} setRegisterOpen={setRegisterOpen} isLoggedIn={isLoggedIn}
             count={count} setCount={setCount} userRooms={userRooms} setUserRooms={setUserRooms}
-            pageHeader={'test'} />
-
-            <NavDrawer open={open} setOpen={setOpen} userRooms={userRooms} setUserRooms={setUserRooms} />
-            <Container maxWidth='xlg'>
-                <Grid container spacing={2}>
-                    <Grid item xs={6} lg={4} xlg={2}>
-                        <Stack style={{minHeight: '600px', minWidth: '400px',
-                        backgroundColor: '#dce7e8', maxHeight: '600px',
-                        marginTop: '40px', overflowY: 'auto',
-                        borderRadius: '10px', padding: '30px', display: 'flex',
-                        flexDirection: 'column-reverse'}}>
-                            <VideoSquare />
-                        </Stack>
-                    </Grid>
-                    <Grid item xs={6} lg={8} xlg={10}> 
-                        <Box 
+            pageHeader={roomInfo.isDm ? (roomInfo.host === Cookies.get('userName') ? roomInfo.users[1] : roomInfo.host) : roomInfo.roomName} />
+            <CreateRoom newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen} setOpen={setOpen} />
+            <NavDrawer open={open} setOpen={setOpen} userRooms={userRooms} setUserRooms={setUserRooms}
+                isLoggedIn={isLoggedIn} newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen} />
+            <Container maxWidth='lg'>
+                <Grid> 
+                    <Box 
                         style={{minHeight: '600px', minWidth: '300px',
                         backgroundColor: '#dce7e8', maxHeight: '600px',
                         marginTop: '40px', overflowY: 'auto',
@@ -100,8 +103,11 @@ const Chatroom = (props) => {
                                 style={{}}>
                                     {allMessages.slice(0,40).map((message, index) => {
                                         return (<Item key={index}>
-                                            <h4 style={{marginLeft: '5px'}}>{message.userName} - <small>{message.createdAt ? new Date(message.createdAt).toLocaleString() : new Date().toLocaleString()}</small></h4>
-                                            <p style={{marginLeft: '10px'}}>{message.message}</p>
+                                            <h4 style={{marginLeft: '5px', display: 'flex', flexFlow: 'row nowrap', alignItems: 'center'}}>
+                                                <NameMenu userName={message.userName} socket={socket} />  
+                                                <small> - {message.createdAt ? new Date(message.createdAt).toLocaleString() : new Date().toLocaleString()}</small>
+                                            </h4>
+                                            <p style={{marginLeft: '15px', color: 'black'}}>{message.message}</p>
                                         </Item>)
                                     })}
 
@@ -120,9 +126,7 @@ const Chatroom = (props) => {
                                     <Button variant='contained' onClick={e => handleSubmit(e)}>Submit</Button>
                                     </InputAdornment>,
                             }}
-                        />
-                    
-                    </Grid>
+                        />           
                 </Grid>
             </Container>
         </>

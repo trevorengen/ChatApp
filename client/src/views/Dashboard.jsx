@@ -32,7 +32,8 @@ const Dashboard = (props) => {
         <>
             <NavBar pageHeader={''} setOpen={setOpen} open={open} setLoginOpen={setLoginOpen} loginOpen={loginOpen} 
                 registerOpen={registerOpen} setRegisterOpen={setRegisterOpen} isLoggedIn={isLoggedIn}
-                count={count} setCount={setCount} userRooms={userRooms} setUserRooms={setUserRooms} />
+                count={count} setCount={setCount} userRooms={userRooms} setUserRooms={setUserRooms} 
+                dashboard={true} />
             <NavDrawer open={open} setOpen={setOpen} isLoggedIn={isLoggedIn} 
                 newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen}
                 userRooms={userRooms} setUserRooms={setUserRooms} />

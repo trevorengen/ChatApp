@@ -10,6 +10,14 @@ const roomSchema = mongoose.Schema({
     },
     users: {
         type: Array,
+    },
+    isDm: {
+        type: Boolean,
+        required: [true, ''],
+    },
+    host: {
+        type: String,
+        required: [true, ''],
     }
 }, { timestamps: true });
 

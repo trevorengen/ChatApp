@@ -21,13 +21,15 @@ const CreateRoom = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:8000/room/create', { roomName: roomName, users: [Cookies.get('userName')]})
+        axios.post('http://localhost:8000/room/create', { roomName: roomName, users: [Cookies.get('userName')], isDm: false, host: Cookies.get('userName')}, { withCredentials: true })
             .then(room => {
-                console.log();
-                axios.put('http://localhost:8000/api/user/addroom/' + Cookies.get('userName'), { room: room.data.room }, { withCredentials: true })
+                axios.put('http://localhost:8000/api/user/addroom/', { room: room.data.room, userName: Cookies.get('userName') }, { withCredentials: true })
                     .then(rooms => console.log(rooms))
                     .catch(err => console.log(err.response));
                 history.push('/chatroom/'+room.data.room._id);
+                close();
+                setRoomName('');
+                props.setOpen(false);
             })
             .catch(err => console.log(err.response));
     };

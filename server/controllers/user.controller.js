@@ -38,6 +38,7 @@ module.exports.createNewUser = (req, res) => {
         .then(user => {
             const userToken = jwt.sign({ id: user._id }, process.env.SECRET_KEY);
             res.cookie('userToken', userToken, { httpOnly: true })
+            res.cookie('userName', user.userName)
                 .json({ msg: 'Success' });
         })
         .catch(err => {
@@ -66,15 +67,20 @@ module.exports.getOneUserByName = (req, res) => {
 
 // UPDATE
 module.exports.addRoomToUser = (req, res) => {
-    const name = req.params.name
-    User.find({ userName: name })
+    User.find({ userName: req.body.userName })
         .then(user => {
-            const newRoomList = [req.body.room, ...user[0].rooms];
-            User.updateOne({ userName: name }, { rooms: newRoomList }, { new: true })
+            var alreadyHas = false;
+            for (var i=0; i<user[0].rooms.length; i++) {
+                if (req.body.room.roomName.toLowerCase() === user[0].rooms[i].roomName.toLowerCase()) {
+                    return res.status(400).json({ error: 'User already in room!' });
+                }
+            } 
+            const newRoomList = alreadyHas ? [...user[0].rooms] : [req.body.room, ...user[0].rooms];
+            User.updateOne({ userName: req.body.userName }, { rooms: newRoomList }, { new: true })
                 .then(user => res.json({ user: user }))
-                .catch(err => res.json({ error: err }));
+                .catch(err => res.status(400).json({ error: 'Issue finding user, are you logged in?' }));
         })
-        .catch(err => res.json({ error: err }));
+        .catch(err => res.status(400).json({ error: 'It looks like this room does not exist yet.' }));
 };
 
 // DELETE

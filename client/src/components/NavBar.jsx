@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -8,8 +8,11 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { useHistory } from 'react-router';
 
 const NavBar = (props) => {
+
+    const history = useHistory();
 
     const handleDrawerClick = (e) => {
         e.preventDefault();
@@ -34,17 +37,13 @@ const NavBar = (props) => {
     const handleLogoutClick = (e) => {
         e.preventDefault();
         axios.get('http://localhost:8000/api/user/logout', { withCredentials: true })
-            .then(res => {
-                props.setCount(props.count + 1);
-            })
+            .then(() => history.push('/'))
             .catch(err => console.log(err.response));
     };
 
-    const deleteAll = (e) => {
+    const goHome = (e) => {
         e.preventDefault();
-        axios.delete('http://localhost:8000/api/user/deleteall', { withCredentials: true })
-            .then(res => console.log(res))
-            .catch(err => console.log(err));
+        history.push('/');
     };
 
     return (
@@ -66,11 +65,12 @@ const NavBar = (props) => {
                     </Typography>
                     {props.isLoggedIn ? (
                         <>
-                            <Button color='inherit' onClick={e => deleteAll(e)}>DELETE ALL</Button>
+                            {props.dashboard ? '' : <Button color='inherit' onClick={e => goHome(e)}>Home</Button>}
                             <Button color="inherit" onClick={e => handleLogoutClick(e)}>Logout</Button>
                         </>
                     ) : (
                         <>
+                            {props.dashboard ? '' : <Button color='inherit' onClick={e => goHome(e)}>Home</Button>}
                             <Button color="inherit" onClick={e => handleRegisterClick(e)}>Register</Button>
                             <Button color="inherit" onClick={e => handleLoginClick(e)} style={{marginLeft: '50px'}}>Login</Button>
                         </>)}

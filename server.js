@@ -23,6 +23,14 @@ const io = require('socket.io')(server, { cors: true });
 
 io.on('connection', socket => {
 
+    let connections = {};
+
+    socket.on('justJoined', (arg) => {
+        console.log(arg);
+        connections[arg.userName] = arg.socketId;
+        console.log(connections);
+    })
+
     socket.on('join', (room) => {
         console.log(`Joined room ${room}.`)
         socket.join(room);
@@ -31,5 +39,4 @@ io.on('connection', socket => {
     socket.on('sendMessage', (arg) => {
         socket.to(arg.roomId).emit('recieveMessage', arg.roomId);
     });
-    
 });
