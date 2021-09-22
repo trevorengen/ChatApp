@@ -6,11 +6,13 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useHistory } from 'react-router';
 import { Snackbar } from '@mui/material';
+import io from 'socket.io-client';
 
 const NameMenu = (props) => {
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [snack, setSnack] = useState(false);
+    const [socket] = useState(() => io(':8000'));
     const open = Boolean(anchorEl);
     const history = useHistory();
 
@@ -46,11 +48,11 @@ const NameMenu = (props) => {
                             .then(rooms => console.log(rooms))
                             .catch(err => console.log(err.response));
 
-                        history.push('/chatroom/'+room.data.room._id);
+                        history.push('/chatroom/' + room.data.room._id);
                     })
                     .catch(err => console.log(err.response));
 
-                props.socket.emit('sendDm', targetUser)
+                socket.emit('sendDm', targetUser)
                 } else {
                     setSnack(true);
                     handleClose();
@@ -58,6 +60,16 @@ const NameMenu = (props) => {
             })
             .catch(err => console.log(err));
     };
+
+    const handleCall = (targetUser) => {
+        handleDm(targetUser);
+        axios.get('http://localhost:8000/api/user/name/' + targetUser, { withCredentials: true })
+            .then(user => {
+                const userInfo = user.data.user;
+                socket.emit('start_call', { userInfo: userInfo, caller: Cookies.get('userName') });
+            })
+            .catch(err => console.log(err));
+    }
 
     return (
         <div>
@@ -78,7 +90,7 @@ const NameMenu = (props) => {
                 }}
             >
                 <MenuItem onClick={() => handleDm(props.userName)}>Direct message</MenuItem>
-                <MenuItem onClick={handleClose}>Call</MenuItem>
+                <MenuItem onClick={() => handleCall(props.userName)}>Call</MenuItem>
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
             </Menu>
             <Snackbar message='You already have a DM with this person!' 

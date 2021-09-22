@@ -14,6 +14,7 @@ import Cookies from 'js-cookie';
 import { useParams } from 'react-router';
 import NameMenu from '../components/NameMenu';
 import VideoSquare from '../components/VideoSquare';
+import CallDialog from '../components/CallDialog';
 
 const Chatroom = (props) => {
 
@@ -34,6 +35,8 @@ const Chatroom = (props) => {
     const [count, setCount] = useState(0);
     const [userRooms, setUserRooms] = useState([]);
     const [roomInfo, setRoomInfo] = useState({});
+    const [caller, setCaller] = useState('');
+    const [callOpen, setCallOpen] = useState(false);
     const { id } = useParams();
 
     const handleSubmit = (e) => {
@@ -75,6 +78,11 @@ const Chatroom = (props) => {
                 })
                 .catch(err => console.log(err.response));
         });
+
+        socket.on('recieving_call', (caller) => {
+            setCaller(caller);
+            setCallOpen(true);
+        })
 
         socket.on('recieveDm', (data) => {
             console.log(data);
@@ -136,6 +144,11 @@ const Chatroom = (props) => {
                         />           
                 </Grid>
             </Container>
+            <CallDialog
+                open={callOpen}
+                caller={caller}
+                setCallOpen={setCallOpen}
+            />
         </>
     );
 };

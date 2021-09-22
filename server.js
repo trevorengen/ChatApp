@@ -29,7 +29,7 @@ io.on('connection', socket => {
         console.log(arg);
         connections[arg.userName] = arg.socketId;
         console.log(connections);
-    })
+    });
 
     socket.on('join', (room) => {
         console.log(`Joined room ${room}.`)
@@ -40,9 +40,14 @@ io.on('connection', socket => {
         socket.to(arg.roomId).emit('recieveMessage', arg.roomId);
     });
 
+    socket.on('start_call', (data) => {
+        console.log(data);
+        socket.to(data.userInfo.currentSocket).emit('recieving_call', data.caller);
+    });
+
     socket.on('call', (roomId) => {
         socket.broadcast.to(roomId).emit('call');
-    })
+    });
 
     socket.on('offer', (event) => {
         socket.broadcast.to(event.roomId).emit('answer', event.sdp);

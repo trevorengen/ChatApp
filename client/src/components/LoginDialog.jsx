@@ -7,7 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import axios from 'axios';
-import { useHistory } from 'react-router';
 
 const LoginDialog = (props) => {
 

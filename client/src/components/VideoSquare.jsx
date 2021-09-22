@@ -20,14 +20,15 @@ const VideoSquare = (props) => {
     let localStream;
     let remoteStream;
     let roomId;
+    let callHost;
 
     useEffect(() => {
 
         roomId = props.roomInfo._id;
 
-        setupLocalVideo(setLocalStream(constraints));
+        setLocalStream(constraints);
 
-        socket.on('call', async (callHost) => {
+        socket.on('call', async () => {
             if (callHost === Cookies.get('userName')) {
                 rtcPeerConnection = new RTCPeerConnection(configuration);
                 addLocalTracks(rtcPeerConnection);
@@ -61,13 +62,11 @@ const VideoSquare = (props) => {
 
         // FUNCTIONS BELOW
 
-        async function setupLocalVideo(stream) {
-            document.getElementById('localVid').srcObject(stream);
-        }
-
         async function setLocalStream(constraints) {
             try {
-                return await navigator.mediaDevices.getUserMedia(constraints);
+                let stream = await navigator.mediaDevices.getUserMedia(constraints);
+                let localVid = document.getElementById('localVid');
+                localVid.srcObject = stream;
             } catch (err) {
                 console.log('Error getting local media.', err);
             };
