@@ -39,4 +39,20 @@ io.on('connection', socket => {
     socket.on('sendMessage', (arg) => {
         socket.to(arg.roomId).emit('recieveMessage', arg.roomId);
     });
+
+    socket.on('call', (roomId) => {
+        socket.broadcast.to(roomId).emit('call');
+    })
+
+    socket.on('offer', (event) => {
+        socket.broadcast.to(event.roomId).emit('answer', event.sdp);
+    });
+
+    socket.on('answer', (event) => {
+        socket.broadcast.to(event.roomId).emit('answer', event.sdp);
+    });
+
+    socket.on('ice_candidate', (event) => {
+        socket.broadcast.to(event.roomId).emit('ice_candidate', event);
+    });
 });

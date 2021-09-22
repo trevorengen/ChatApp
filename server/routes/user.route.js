@@ -12,6 +12,7 @@ module.exports = app => {
     app.get('/api/user/:id', authenticate, User.getOneUser);
     
     app.put('/api/user/addroom', authenticate, User.addRoomToUser);
+    app.put('/api/user/updatesocket/', authenticate, User.updateUserSocket);
 
     app.delete('/api/user/deleteall', User.deleteAllUsers)
     app.delete('/api/user/delete/:id', authenticate, User.deleteOneUser)

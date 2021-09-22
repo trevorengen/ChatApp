@@ -13,6 +13,7 @@ import CreateRoom from '../components/CreateRoom';
 import Cookies from 'js-cookie';
 import { useParams } from 'react-router';
 import NameMenu from '../components/NameMenu';
+import VideoSquare from '../components/VideoSquare';
 
 const Chatroom = (props) => {
 
@@ -36,12 +37,12 @@ const Chatroom = (props) => {
     const { id } = useParams();
 
     const handleSubmit = (e) => {
-        const messageObj = {userName: Cookies.get('userName'), message: message, roomId: id};
+        const messageObj = { userName: Cookies.get('userName'), message: message, roomId: id };
         e.preventDefault();
         socket.emit('sendMessage', messageObj);
         setAllMessages([messageObj, ...allMessages]);
         setMessage('');
-        axios.post('http://localhost:8000/message/create', messageObj, {withCredentials: true})
+        axios.post('http://localhost:8000/message/create', messageObj, { withCredentials: true })
             .then(res => res)
             .catch(err => console.log(err.response));
     };
@@ -51,7 +52,7 @@ const Chatroom = (props) => {
             .then(room => setRoomInfo(room.data.room))
             .catch(err => console.log(err));
 
-        axios.get('http://localhost:8000/message/getmessages/' + id, {withCredentials: true})
+        axios.get('http://localhost:8000/message/getmessages/' + id, { withCredentials: true })
             .then(messages => {
                 setAllMessages(messages.data.messages.reverse())
             })
@@ -59,10 +60,16 @@ const Chatroom = (props) => {
 
         socket.disconnect(true);
         socket.connect();
+        socket.on('connect', () => {
+            console.log(socket.id);
+            axios.put('http://localhost:8000/api/user/updatesocket', { userName: Cookies.get('userName'), socket: socket.id }, { withCredentials: true })
+                .then(user => user)
+                .catch(err => console.log(err));
+        })
 
         socket.on('recieveMessage', (data) => {
             console.log(data);
-            axios.get('http://localhost:8000/message/getmessages/' + data, {withCredentials: true})
+            axios.get('http://localhost:8000/message/getmessages/' + data, { withCredentials: true })
                 .then(messages => {
                     setAllMessages([...messages.data.messages.reverse()])
                 })
@@ -73,7 +80,6 @@ const Chatroom = (props) => {
             console.log(data);
         });
         socket.emit('join', id);
-
 
         return () => socket.disconnect(true);
     }, [id, socket]);
@@ -88,7 +94,8 @@ const Chatroom = (props) => {
             <NavDrawer open={open} setOpen={setOpen} userRooms={userRooms} setUserRooms={setUserRooms}
                 isLoggedIn={isLoggedIn} newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen} />
             <Container maxWidth='lg'>
-                <Grid> 
+                <Grid>
+                    {roomInfo.isDm ? <VideoSquare roomInfo={roomInfo} /> : ''}
                     <Box 
                         style={{minHeight: '600px', minWidth: '300px',
                         backgroundColor: '#dce7e8', maxHeight: '600px',

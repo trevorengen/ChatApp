@@ -22,6 +22,9 @@ const userSchema = new mongoose.Schema({
     },
     rooms: {
         type: Array,
+    },
+    currentSocket: {
+        type: String,
     }
 }, { timestamps: true });
 

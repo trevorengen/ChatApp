@@ -22,7 +22,11 @@ const Greeting = () => {
                 axios.put('http://localhost:8000/api/user/addroom', payload, { withCredentials: true })
                     .then(() => history.push('/chatroom/' + room._id))
                     .catch(err => {
-                        setError(err.response.data.error);
+                        if (err.response.data.error === undefined) {
+                            setError('You have to be logged in to do that!');
+                        } else {
+                            setError(err.response.data.error);
+                        }
                         setRoomCode('');
                         setNoRoom(true);
                     });
@@ -37,7 +41,7 @@ const Greeting = () => {
 
     return (
         <div>
-            <h1 style={{marginTop: '150px'}}>Sign in or Enter a Room Code to Get Started</h1>
+            <h1 style={{marginTop: '150px'}}>Sign Up Then Enter a Room Code to Get Started</h1>
             <TextField 
                 style={{minWidth: '400px'}}
                 type='text'

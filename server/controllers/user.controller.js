@@ -83,6 +83,15 @@ module.exports.addRoomToUser = (req, res) => {
         .catch(err => res.status(400).json({ error: 'It looks like this room does not exist yet.' }));
 };
 
+module.exports.updateUserSocket = (req, res) => {
+    User.updateOne({ userName: req.body.userName }, { currentSocket: req.body.socket }, { new: true })
+        .then(user => {
+            console.log(user);
+            res.json({ user: user });
+        })
+        .catch(err => res.json({ error: err }));
+};
+
 // DELETE
 module.exports.deleteAllUsers = (req, res) => {
     User.deleteMany({})
