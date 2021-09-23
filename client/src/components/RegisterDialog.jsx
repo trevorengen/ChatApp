@@ -15,6 +15,7 @@ const RegisterDialog = (props) => {
         email: '', 
         password: '',
         confirmPassword: '',
+        rooms: [],
     });
     const [errors, setErrors] = useState({
         email: '',

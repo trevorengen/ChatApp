@@ -70,12 +70,13 @@ module.exports.getOneUserByName = (req, res) => {
 module.exports.addRoomToUser = (req, res) => {
     User.find({ userName: req.body.userName })
         .then(user => {
-            console.log(req.body);
-            for (var i=0; i<user[0].rooms.length; i++) {     
-                if (req.body.room.roomName.toLowerCase() === user[0].rooms[i].roomName.toLowerCase()) {
-                    return res.status(400).json({ error: 'User already in room!' });
-                }
-            } 
+            if (user[0].rooms[0] !== null) {
+                for (var i=0; i<user[0].rooms.length; i++) {     
+                    if (req.body.room.roomName.toLowerCase() === user[0].rooms[i].roomName.toLowerCase()) {
+                        return res.status(400).json({ error: 'User already in room!' });
+                    };
+                };
+            };
             User.updateOne({ userName: req.body.userName }, { $push: { rooms: req.body.room} }, { new: true })
                 .then(user => res.json({ user: user }))
                 .catch(err => res.status(400).json({ error: err }));
@@ -85,7 +86,7 @@ module.exports.addRoomToUser = (req, res) => {
         })
         .catch(err => {
             console.log(err);
-            res.status(400).json({ error: err });
+            return res.status(400).json({ error: err });
         });
 };
 
