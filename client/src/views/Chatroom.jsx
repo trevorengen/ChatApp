@@ -25,7 +25,7 @@ const Chatroom = (props) => {
         color: theme.palette.text.secondary,
     }));
 
-    const [socket] = useState(() => io(':8000'));
+    const [socket] = useState(() => io());
     const [message, setMessage] = useState('');
     const [allMessages, setAllMessages] = useState([]);
     const [open, setOpen] = useState(false);
