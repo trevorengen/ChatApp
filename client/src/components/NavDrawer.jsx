@@ -44,6 +44,13 @@ const NavDrawer = (props) => {
                 <h4 style={{margin: '10px'}}>Direct Messages</h4>
                 {props.userRooms.map((room, idx) => {
                     if (room.isDm) {
+                        if (room.roomName === 'Looks lonely!') {
+                            return (
+                                <ListItem key={idx}>
+                                    <small>Looks lonely!</small>
+                                </ListItem>
+                            )
+                        }
                         return (
                             <ListItem key={idx}>
                                 <Link underline='hover' component='button' variant='h6'
@@ -58,6 +65,13 @@ const NavDrawer = (props) => {
                 <h4 style={{margin: '10px'}}>Chat Rooms</h4>
                 {props.userRooms.map((room, idx) => {
                     if (!room.isDm) {
+                        if (room.roomName === 'No friends?') {
+                            return (
+                                <ListItem key={idx}>
+                                    <small>No friends?</small>
+                                </ListItem>
+                            )
+                        }
                         return (
                             <ListItem key={idx}>
                                 <Link underline='hover' component='button' variant='h6'

@@ -37,7 +37,10 @@ const NavBar = (props) => {
     const handleLogoutClick = (e) => {
         e.preventDefault();
         axios.get('http://localhost:8000/api/user/logout', { withCredentials: true })
-            .then(() => history.push('/'))
+            .then(() => {
+                props.setLoggedIn(false);
+                history.push('/');
+            })
             .catch(err => console.log(err.response));
     };
 

@@ -24,7 +24,6 @@ const LoginDialog = (props) => {
             .then(res => {
                 props.setCount(props.count + 1);
                 props.setLoginOpen(false);
-                console.log(res);
             })
             .catch(err => {
                 setError(err.response.data);

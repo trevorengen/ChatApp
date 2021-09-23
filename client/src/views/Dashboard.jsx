@@ -14,7 +14,11 @@ const Dashboard = (props) => {
     const [registerOpen, setRegisterOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [count, setCount] = useState(0);
-    const [userRooms, setUserRooms] = useState([]);
+    const [userRooms, setUserRooms] = useState([{
+        roomName: 'Looks lonely!', isDm: true, host: 'Looks lonely!',
+    }, {
+        roomName: 'No friends?', isDm: false, host: 'NaN',
+    }]);
 
     const whatLinks = () => {
         axios.get('http://localhost:8000/api/user/isloggedin', { withCredentials : true })
@@ -32,7 +36,7 @@ const Dashboard = (props) => {
         <>
             <NavBar pageHeader={''} setOpen={setOpen} open={open} setLoginOpen={setLoginOpen} loginOpen={loginOpen} 
                 registerOpen={registerOpen} setRegisterOpen={setRegisterOpen} isLoggedIn={isLoggedIn}
-                count={count} setCount={setCount} userRooms={userRooms} setUserRooms={setUserRooms} 
+                count={count} setCount={setCount} userRooms={userRooms} setUserRooms={setUserRooms}  setLoggedIn={setIsLoggedIn}
                 dashboard={true} />
             <NavDrawer open={open} setOpen={setOpen} isLoggedIn={isLoggedIn} 
                 newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen}

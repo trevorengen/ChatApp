@@ -1,5 +1,6 @@
-import { Button } from '@mui/material';
+import { Button, Grid, MenuItem, Select } from '@mui/material';
 import React, { useState, useEffect } from 'react';
+import { TextField } from '@mui/material';
 import { Box } from '@mui/system';
 
 const VideoSquare = (props) => {
@@ -13,13 +14,23 @@ const VideoSquare = (props) => {
         { urls: 'stun:stun1.l.google.com:19302' },
     ]};
     const [roomId, setRoomId] = useState(props.roomInfo._id);
+    const [effect, setEffect] = useState('');
+    const [effectValue, setEffectValue] = useState(1);
+
+    const handleChange = (event) => {
+        setEffectValue(1);
+        setEffect(event.target.value);
+    };
+
+    const handleValueChange = (event) => {
+        setEffectValue(event.target.value);
+    }
 
     const handleCall = async (e) => {
         e.preventDefault();
         var localVid = document.getElementById('localVid');
         try {
             var stream = await navigator.mediaDevices.getUserMedia(constraints)
-            var localStream = stream;
             localVid.srcObject = stream;
         } catch (err) {
             console.log('Error getting local media.', err);
@@ -143,19 +154,59 @@ const VideoSquare = (props) => {
 
     return (
         <Box 
-            style={{minHeight: '500px', minWidth: '300px',
+            style={{minHeight: '65vh', minWidth: '300px',
             backgroundColor: '#dce7e8', maxHeight: '600px',
             marginTop: '40px', overflowY: 'none', alignItems: 'space-evenly',
             borderRadius: '10px', padding: '30px', display: 'flex', justifyContent: 'space-evenly',
             flexDirection: 'column'}}
         >
             <video id='remoteVid' autoPlay preload='auto' controls style={{margin: '10px 0', borderRadius: '15px'}}>
-
             </video>
 
-            <video id='localVid' autoPlay preload='auto' controls style={{margin: '10px 0', borderRadius: '15px'}}>
-
+            <video id='localVid' autoPlay preload='auto' controls 
+                style={{margin: '10px 0', borderRadius: '15px', 
+                WebkitFilter: effect === 'blur' ? 'blur('+effectValue+'px)' :  
+                effect === 'grayscale' ? 'grayscale('+effectValue+')' : 
+                effect === 'saturate' ? 'saturate('+effectValue+')' :
+                effect === 'negative' ? 'invert('+effectValue+')' : 
+                effect === 'sepia' ? 'sepia('+effectValue+')' :
+                effect === 'contrast' ? 'contrast('+effectValue+')' : ''}}
+            >
             </video>
+            <Grid container spacing={1}>
+                <Grid item xs={9}>
+                    <Select
+                        style={{width: '100%'}}
+                        value={effect}
+                        onChange={handleChange}
+                        label='Effects'
+                        id='select-effects'
+                        variant='filled'
+                    >
+                        <MenuItem value='' defaultChecked>None</MenuItem>
+                        <MenuItem value='blur'>Blur</MenuItem>
+                        <MenuItem value='grayscale'>Black & White</MenuItem>
+                        <MenuItem value='saturate'>Saturate</MenuItem>
+                        <MenuItem value='negative'>Negative</MenuItem>
+                        <MenuItem value='contrast'>Contrast</MenuItem>
+                    </Select>
+                </Grid>
+                <Grid item xs={3}>
+                    <TextField
+                        id="standard-number"
+                        value={effectValue}
+                        onChange={handleValueChange}
+                        label="Value"
+                        type="number"
+                        inputProps={{min: '0', max: '50', step: '0.1'}}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        style={{width: '90%'}}
+                        variant="filled"
+                    />
+                </Grid>
+            </Grid>
             <Button onClick={e => handleCall(e)} variant='contained' color='secondary'>Call</Button>
         </Box>
     );

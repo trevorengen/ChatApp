@@ -19,13 +19,14 @@ const Greeting = () => {
             .then(room => {
                 room = room.data.room;
                 const payload = { room: room, userName: Cookies.get('userName') };
+                console.log(payload);
                 axios.put('http://localhost:8000/api/user/addroom', payload, { withCredentials: true })
                     .then(() => history.push('/chatroom/' + room._id))
                     .catch(err => {
                         if (err.response.data.error === undefined) {
                             setError('You have to be logged in to do that!');
                         } else {
-                            setError(err.response.data.error);
+                            console.log(err.response);
                         }
                         setRoomCode('');
                         setNoRoom(true);

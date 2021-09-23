@@ -40,6 +40,10 @@ const Chatroom = (props) => {
 
     const handleSubmit = (e) => {
         var messageBox = document.getElementById('messageBox');
+        if (messageBox.value === '') {
+            e.preventDefault();
+            return;
+        }
         const messageObj = { userName: Cookies.get('userName'), message: messageBox.value, roomId: id };
         e.preventDefault();
         socket.emit('sendMessage', messageObj);
@@ -96,7 +100,7 @@ const Chatroom = (props) => {
         <>
             <NavBar pageHeader={''} setOpen={setOpen} open={open} setLoginOpen={setLoginOpen} loginOpen={loginOpen} 
             registerOpen={registerOpen} setRegisterOpen={setRegisterOpen} isLoggedIn={isLoggedIn}
-            count={count} setCount={setCount} userRooms={userRooms} setUserRooms={setUserRooms}
+            count={count} setCount={setCount} userRooms={userRooms} setUserRooms={setUserRooms} setLoggedIn={setIsLoggedIn}
             pageHeader={roomInfo.isDm ? (roomInfo.host === Cookies.get('userName') ? roomInfo.users[1] : roomInfo.host) : roomInfo.roomName} />
             <CreateRoom newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen} setOpen={setOpen} />
             <NavDrawer open={open} setOpen={setOpen} userRooms={userRooms} setUserRooms={setUserRooms}
@@ -107,7 +111,7 @@ const Chatroom = (props) => {
                     <Grid item xlg={roomInfo.isDm ? 12 : 10} lg={roomInfo.isDm ? 8 : 12} md={roomInfo.isDm ? 6 : 12} sm={roomInfo.isDm ? 12 : 12} xs={roomInfo.isDm ? 12 : 12}>
                     <Box 
                         style={{backgroundColor: '#dce7e8', maxHeight: '500px',
-                        marginTop: '40px', overflowY: 'auto',
+                        marginTop: '40px', overflowY: 'auto', minHeight: '60vh',
                         borderRadius: '10px', padding: '30px', display: 'flex',
                         flexDirection: 'column-reverse'}}>
                             <Stack
@@ -134,6 +138,7 @@ const Chatroom = (props) => {
                             id="outlined-multiline-flexible"
                             multiline
                             id='messageBox'
+                            onKeyPress={e => e.key === 'Enter' ? handleSubmit(e) : null}
                             maxRows={4}
                             InputProps={{
                                 endAdornment: <InputAdornment position="end">

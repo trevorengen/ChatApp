@@ -24,7 +24,7 @@ const CreateRoom = (props) => {
         e.preventDefault();
         axios.post('http://localhost:8000/room/create', { roomName: roomName, users: [Cookies.get('userName')], isDm: false, host: Cookies.get('userName')}, { withCredentials: true })
             .then(room => {
-                axios.put('http://localhost:8000/api/user/addroom/', { room: room.data.room, userName: Cookies.get('userName') }, { withCredentials: true })
+                axios.put('http://localhost:8000/api/user/addroom', { room: room.data.room, userName: Cookies.get('userName') }, { withCredentials: true })
                     .then(rooms => console.log(rooms))
                     .catch(err => console.log(err.response));
                 history.push('/chatroom/'+room.data.room._id);
@@ -32,9 +32,7 @@ const CreateRoom = (props) => {
                 setRoomName('');
                 props.setOpen(false);
             })
-            .catch(err => {
-                setError(err.response.data);
-            });
+            .catch(err => setError(err.response))
     };
 
     return (
@@ -47,7 +45,7 @@ const CreateRoom = (props) => {
                 </DialogContentText>
                 <TextField
                     error={error === '' ? false : true}
-                    helperText={error === '' ? '' : error}
+                    helperText={error === '' ? '' : error.data}
                     fullWidth
                     autoFocus
                     margin='dense'

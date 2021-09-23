@@ -1,4 +1,5 @@
 const User = require('../models/user.model');
+const Room = require('../models/room.model');
 const jwt = require('jsonwebtoken');
 const { findOne } = require('../models/user.model');
 const bcrypt = require('bcrypt');
@@ -69,19 +70,21 @@ module.exports.getOneUserByName = (req, res) => {
 module.exports.addRoomToUser = (req, res) => {
     User.find({ userName: req.body.userName })
         .then(user => {
-            var alreadyHas = false;
-            for (var i=0; i<user[0].rooms.length; i++) {
-                console.log('here');
+            for (var i=0; i<user[0].rooms.length; i++) {            
                 if (req.body.room.roomName.toLowerCase() === user[0].rooms[i].roomName.toLowerCase()) {
                     return res.status(400).json({ error: 'User already in room!' });
                 }
             } 
-            const newRoomList = alreadyHas ? [...user[0].rooms] : [req.body.room, ...user[0].rooms];
-            User.updateOne({ userName: req.body.userName }, { rooms: newRoomList }, { new: true })
+            User.updateOne({ userName: req.body.userName }, { $push: { rooms: req.body.room} }, { new: true })
                 .then(user => res.json({ user: user }))
-                .catch(err => res.status(400).json({ error: 'Issue finding user, are you logged in?' }));
+            Room.updateOne({ _id: req.body.room._id }, { $push: { users: user } }, { new: true })
+                .then(room => res.json({ room: room }))
+                .catch(err => res.json(err))
         })
-        .catch(err => res.status(400).json({ error: 'It looks like this room does not exist yet.' }));
+        .catch(err => {
+            console.log(err);
+            res.status(400).json({ error: err });
+        });
 };
 
 module.exports.updateUserSocket = (req, res) => {
