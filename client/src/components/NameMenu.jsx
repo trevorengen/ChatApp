@@ -6,13 +6,11 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useHistory } from 'react-router';
 import { Snackbar } from '@mui/material';
-import io from 'socket.io-client';
 
 const NameMenu = (props) => {
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [snack, setSnack] = useState(false);
-    const [socket] = useState(() => io(':8000'));
     const open = Boolean(anchorEl);
     const history = useHistory();
 
@@ -52,11 +50,11 @@ const NameMenu = (props) => {
                     })
                     .catch(err => console.log(err.response));
 
-                socket.emit('sendDm', targetUser)
+                props.socket.emit('sendDm', targetUser)
                 } else {
                     setSnack(true);
                     handleClose();
-                    history.push('/chatroom/' + rooms.data.room._id);
+                    history.push('/chatroom/' + rooms.data.room[0]._id);
                 }
             })
             .catch(err => console.log(err));
@@ -67,7 +65,7 @@ const NameMenu = (props) => {
         axios.get('http://localhost:8000/api/user/name/' + targetUser, { withCredentials: true })
             .then(user => {
                 const userInfo = user.data.user;
-                socket.emit('start_call', { userInfo: userInfo, caller: Cookies.get('userName') });
+                props.socket.emit('start_call', { userInfo: userInfo, caller: Cookies.get('userName') });
 
             })
             .catch(err => console.log(err));

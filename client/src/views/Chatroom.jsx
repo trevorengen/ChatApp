@@ -25,8 +25,7 @@ const Chatroom = (props) => {
         color: theme.palette.text.secondary,
     }));
 
-    const [socket] = useState(() => io('http://3.129.195.240/'));
-    const [message, setMessage] = useState('');
+    const [socket] = useState(() => io('http://localhost:8000'));
     const [allMessages, setAllMessages] = useState([]);
     const [open, setOpen] = useState(false);
     const [loginOpen, setLoginOpen] = useState(false);
@@ -34,27 +33,32 @@ const Chatroom = (props) => {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [count, setCount] = useState(0);
     const [userRooms, setUserRooms] = useState([]);
-    const [roomInfo, setRoomInfo] = useState({});
+    const [roomInfo, setRoomInfo] = useState('');
     const [caller, setCaller] = useState('');
     const [callOpen, setCallOpen] = useState(false);
     const { id } = useParams();
 
     const handleSubmit = (e) => {
-        const messageObj = { userName: Cookies.get('userName'), message: message, roomId: id };
+        var messageBox = document.getElementById('messageBox');
+        const messageObj = { userName: Cookies.get('userName'), message: messageBox.value, roomId: id };
         e.preventDefault();
         socket.emit('sendMessage', messageObj);
         setAllMessages([messageObj, ...allMessages]);
-        setMessage('');
+        messageBox.value = '';
         axios.post('http://localhost:8000/message/create', messageObj, { withCredentials: true })
             .then(res => res)
             .catch(err => console.log(err.response));
     };
 
     useEffect(() => {
+
+        socket.disconnect(true);
+        socket.connect();
+
         axios.get('http://localhost:8000/room/' + id, { withCredentials: true })
             .then(room => {
+                console.log(id);
                 setRoomInfo(room.data.room);
-                console.log(room.data.room);
             })
             .catch(err => console.log(err));
 
@@ -63,9 +67,7 @@ const Chatroom = (props) => {
                 setAllMessages(messages.data.messages.reverse())
             })
             .catch(err => console.log(err.response));
-
-        socket.disconnect(true);
-        socket.connect();
+        
         socket.on('connect', () => {
             console.log(socket.id);
             axios.put('http://localhost:8000/api/user/updatesocket', { userName: Cookies.get('userName'), socket: socket.id }, { withCredentials: true })
@@ -90,8 +92,9 @@ const Chatroom = (props) => {
         socket.on('recieveDm', (data) => {
             console.log(data);
         });
+
         socket.emit('join', id);
-        
+
         return () => socket.disconnect(true);
     }, [id, socket]);
 
@@ -106,7 +109,7 @@ const Chatroom = (props) => {
                 isLoggedIn={isLoggedIn} newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen} />
             <Container maxWidth='xlg'>
                 <Grid container spacing={3}>
-                    {roomInfo.isDm ? (<Grid item xlg={2} lg={4} md={6} sm={8} xs={8}><VideoSquare style={{marginRight: '30px'}} roomInfo={roomInfo} /></Grid>) : ''}
+                    {roomInfo.isDm ? (<Grid item xlg={2} lg={4} md={6} sm={8} xs={8}><VideoSquare socket={socket} style={{marginRight: '30px'}} roomInfo={roomInfo} /></Grid>) : ''}
                     <Grid item xlg={roomInfo.isDm ? 12 : 10} lg={roomInfo.isDm ? 8 : 12} md={roomInfo.isDm ? 6 : 12} sm={roomInfo.isDm ? 4 : 12} xs={roomInfo.isDm ? 4 : 12}>
                     <Box 
                         style={{minHeight: '600px', minWidth: '300px',
@@ -137,9 +140,8 @@ const Chatroom = (props) => {
                             fullWidth
                             id="outlined-multiline-flexible"
                             multiline
+                            id='messageBox'
                             maxRows={4}
-                            value={message}
-                            onChange={e => setMessage(e.target.value)}
                             InputProps={{
                                 endAdornment: <InputAdornment position="end">
                                     <Button variant='contained' onClick={e => handleSubmit(e)}>Submit</Button>

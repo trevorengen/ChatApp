@@ -20,22 +20,13 @@ const port = 8000;
 const server = app.listen(port, () => console.log(`Listening on port ${port}.`));
 
 const io = require('socket.io')(server, { cors: {
-    origin: 'http://3.129.195.240:3000',
-    methods: ['GET', 'POST'],
+    origin: 'http://localhost:3000',
 } });
 
 io.on('connection', socket => {
 
-    let connections = {};
-
-    socket.on('justJoined', (arg) => {
-        console.log(arg);
-        connections[arg.userName] = arg.socketId;
-        console.log(connections);
-    });
-
     socket.on('join', (room) => {
-        console.log(`Joined room ${room}.`)
+        console.log(`Joined room ${room}.`);
         socket.join(room);
     });
 
@@ -53,17 +44,19 @@ io.on('connection', socket => {
     });
 
     socket.on('offer', (event) => {
+        console.log(event)
         console.log(`Server offer of: ${event}.`);
         socket.broadcast.to(event.roomId).emit('offer', event.sdp);
     });
 
     socket.on('answer', (event) => {
+        console.log(event)
         console.log(`Server answer of: ${event}.`);
         socket.broadcast.to(event.roomId).emit('answer', event.sdp);
     });
 
     socket.on('ice_candidate', (event) => {
-        console.log(`Server new ice candidate: ${event}.`);
+        console.log(event)
         socket.broadcast.to(event.roomId).emit('ice_candidate', event);
     });
 });

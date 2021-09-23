@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import Cookies from 'js-cookie';
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
@@ -5,75 +6,80 @@ import io from 'socket.io-client';
 const VideoSquare = (props) => {
 
     const constraints = {
-        video: {width: {exact: 480}, height: {exact: 320}},
+        video: { width: 480, height: 260},
         audio: true,
     }
     const configuration = { iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-        { urls: 'stun:stun3.l.google.com:19302' },
-        { urls: 'stun:stun4.l.google.com:19302' },
     ]};
-    const [socket] = useState(() => io(':8000'));
+    const [roomId, setRoomId] = useState(props.roomInfo._id);
+
+    const handleCall = (e) => {
+        e.preventDefault();
+        props.socket.emit('call', roomId);
+    }
 
     useEffect(() => {
-        let rtcPeerConnection;
-        let localStream;
-        let remoteStream;
-        let callHost = props.roomInfo.host;
-        let roomId = props.roomInfo._id;
+        var rtcPeerConnection = new RTCPeerConnection(configuration);
+        var localStream;
+        const remoteStream = document.getElementById('remoteVid');
+        setRoomId(props.roomInfo._id);
 
-        setLocalStream(constraints);
-
-        socket.on('call', async () => {
-            if (callHost === Cookies.get('userName')) {
-                console.log('client call');
-                rtcPeerConnection = new RTCPeerConnection(configuration);
-                addLocalTracks(rtcPeerConnection);
-                rtcPeerConnection.ontrack = setRemoteStream;
-                rtcPeerConnection.onicecandidate = sendIceCandidate;
-                
-                await createOffer(rtcPeerConnection);
-            };
+        props.socket.on('call', async () => {
+            await setLocalStream(constraints);
+            console.log('client call');
+            rtcPeerConnection.ontrack = setRemoteStream;
+            rtcPeerConnection.onicecandidate = sendIceCandidate;
+            await createOffer(rtcPeerConnection);
+            console.log('Client call event end.');
         });
 
-        socket.on('offer', async (event) => {
-            if(callHost !== Cookies.get('userName')) {
-                rtcPeerConnection = new RTCPeerConnection(configuration);
-                addLocalTracks(rtcPeerConnection);
-                rtcPeerConnection.ontrack = setRemoteStream;
-                rtcPeerConnection.onicecandidate = sendIceCandidate;
-                rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
-                await createAnswer(rtcPeerConnection);
-                console.log('client offer')
-            };
+        props.socket.on('offer', async (event) => {
+            console.log('Client offer event start.');
+            await setLocalStream(constraints);
+            rtcPeerConnection.ontrack = setRemoteStream;
+            await rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
+            rtcPeerConnection.onicecandidate = sendIceCandidate;                
+            await createAnswer(rtcPeerConnection);
+            console.log('Client offer event end.');
+            
         });
 
-        socket.on('answer', (event) => {
+        props.socket.on('answer', (event) => {
+            console.log('Client answer event start.');
             rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
+            console.log('Client answer event end.');
         });
 
-        socket.on('ice_candidate', (event) => {
+        props.socket.on('ice_candidate', (event) => {
+            console.log('Client ice candidate event start.');
             var candidate = new RTCIceCandidate({
                 sdpMLineIndex: event.label,
                 candidate: event.candidate,
             });
+            console.log(candidate);
+            rtcPeerConnection.addIceCandidate(candidate);
         });
 
         // FUNCTIONS BELOW
 
         async function setLocalStream(constraints) {
+            let stream;
+            let localVid = document.getElementById('localVid');
             try {
-                let stream = await navigator.mediaDevices.getUserMedia(constraints);
-                let localVid = document.getElementById('localVid');
+                stream = await navigator.mediaDevices.getUserMedia(constraints)
+                localStream = stream;
                 localVid.srcObject = stream;
             } catch (err) {
                 console.log('Error getting local media.', err);
             };
+            addLocalTracks(rtcPeerConnection);
+            localVid.srcObject = stream;
         };
 
         function addLocalTracks(rtcPeerConnection) {
+            console.log(localStream);
             localStream.getTracks().forEach((track) => {
                 rtcPeerConnection.addTrack(track, localStream);
             });
@@ -88,7 +94,7 @@ const VideoSquare = (props) => {
                 console.error(error);
             };
           
-            socket.emit('offer', {
+            props.socket.emit('offer', {
                 type: 'offer',
                 sdp: sessionDescription,
                 roomId,
@@ -104,7 +110,7 @@ const VideoSquare = (props) => {
                 console.error(error);
             };
           
-            socket.emit('answer', {
+            props.socket.emit('answer', {
                 type: 'answer',
                 sdp: sessionDescription,
                 roomId,
@@ -112,22 +118,19 @@ const VideoSquare = (props) => {
         };
           
         function setRemoteStream(event) {
-            document.getElementById('remoteVid').srcObject = event.streams[0];
-            remoteStream = event.stream;
+            remoteStream.srcObject = event.streams[0];
+            console.log(event);
         };
           
         function sendIceCandidate(event) {
             if (event.candidate) {
-                socket.emit('ice_candidate', {
+                props.socket.emit('ice_candidate', {
                     roomId,
                     label: event.candidate.sdpMLineIndex,
                     candidate: event.candidate.candidate,
               });
             };
         };
-
-        // Finally we emit the call event.
-        socket.emit('call', roomId);
 
     }, []);
 
@@ -140,6 +143,7 @@ const VideoSquare = (props) => {
             <video id='localVid' autoPlay>
 
             </video>
+            <Button onClick={e => handleCall(e)}>Call</Button>
         </>
     );
 };
