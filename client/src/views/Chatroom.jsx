@@ -57,7 +57,6 @@ const Chatroom = (props) => {
 
         axios.get('http://localhost:8000/room/' + id, { withCredentials: true })
             .then(room => {
-                console.log(id);
                 setRoomInfo(room.data.room);
             })
             .catch(err => console.log(err));
@@ -76,7 +75,6 @@ const Chatroom = (props) => {
         })
 
         socket.on('recieveMessage', (data) => {
-            console.log(data);
             axios.get('http://localhost:8000/message/getmessages/' + data, { withCredentials: true })
                 .then(messages => {
                     setAllMessages([...messages.data.messages.reverse()])
@@ -88,10 +86,6 @@ const Chatroom = (props) => {
             setCaller(caller);
             setCallOpen(true);
         })
-
-        socket.on('recieveDm', (data) => {
-            console.log(data);
-        });
 
         socket.emit('join', id);
 
