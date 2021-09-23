@@ -38,6 +38,7 @@ io.on('connection', socket => {
         socket.to(data.userInfo.currentSocket).emit('recieving_call', data.caller);
     });
 
+    // WEB RTC COMMUNICATION EVENTS
     socket.on('call', (roomId) => {
         console.log(`Server call on ${roomId}.`);
         socket.broadcast.to(roomId).emit('call');
@@ -58,5 +59,14 @@ io.on('connection', socket => {
     socket.on('ice_candidate', (event) => {
         console.log(event)
         socket.broadcast.to(event.roomId).emit('ice_candidate', event);
+    });
+
+    // REMOTE VIDEO EFFECT CHANGES
+    socket.on('effectChange', (data) => {
+        socket.broadcast.to(data.roomId).emit('effectChange', data.effect);
+    });
+
+    socket.on('effectValueChange', (data) => {
+        socket.broadcast.to(data.roomId).emit('effectValueChange', data.effectValue);
     });
 });

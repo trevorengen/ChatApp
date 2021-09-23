@@ -1,4 +1,5 @@
 const Room = require('../models/room.model');
+const { $where } = require('../models/user.model');
 const User = require('../models/user.model');
 
 // CREATE
@@ -27,7 +28,8 @@ module.exports.getRoomById = (req, res) => {
 };
 
 module.exports.getRoomByName = (req, res) => {
-    Room.findOne({ roomName: req.params.name.toLowerCase() })
+    console.log('here');
+    Room.findOne({ roomName: new RegExp(`^${req.params.name}$`, 'i') })
         .then(room => res.json({ room: room }))
         .catch(err => res.status(400).json({ error: err }));
 };

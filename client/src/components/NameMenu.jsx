@@ -27,7 +27,7 @@ const NameMenu = (props) => {
     };
 
     const handleDm = (targetUser) => {
-        axios.get('http://localhost:8000/room/' + Cookies.get('userName') + '/' + targetUser)
+        axios.get('http://localhost:8000/room/dmroom/' + Cookies.get('userName') + '/' + targetUser)
             .then(rooms => {
                 if (rooms.data.room.length === 0) {
                 axios.post('http://localhost:8000/room/create', { 

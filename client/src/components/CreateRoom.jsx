@@ -22,17 +22,26 @@ const CreateRoom = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:8000/room/create', { roomName: roomName, users: [Cookies.get('userName')], isDm: false, host: Cookies.get('userName')}, { withCredentials: true })
-            .then(room => {
-                axios.put('http://localhost:8000/api/user/addroom', { room: room.data.room, userName: Cookies.get('userName') }, { withCredentials: true })
-                    .then(rooms => console.log(rooms))
-                    .catch(err => console.log(err.response));
-                history.push('/chatroom/'+room.data.room._id);
-                close();
-                setRoomName('');
-                props.setOpen(false);
+        axios.get('http://localhost:8000/api/user/name/' + Cookies.get('userName'))
+            .then(user => {
+                axios.post('http://localhost:8000/room/create', { 
+                    roomName: roomName, 
+                    users: [user.data.user], 
+                    isDm: false, 
+                    host: user.data.user}, 
+                    { withCredentials: true })
+                .then(room => {
+                    axios.put('http://localhost:8000/api/user/addroom', { room: room.data.room, userName: Cookies.get('userName') }, { withCredentials: true })
+                        .then(rooms => console.log(rooms))
+                        .catch(err => console.log(err.response));
+                    history.push('/chatroom/'+room.data.room._id);
+                    close();
+                    setRoomName('');
+                    props.setOpen(false);
+                })
+                .catch(err => setError(err.response))
             })
-            .catch(err => setError(err.response))
+            .catch(err => console.log(err));
     };
 
     return (

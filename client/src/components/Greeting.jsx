@@ -15,7 +15,8 @@ const Greeting = () => {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        axios.get('http://localhost:8000/room/name/' + roomCode)
+        console.log(roomCode);
+        axios.get('http://localhost:8000/room/name/' + roomCode, { withCredentials: true })
             .then(room => {
                 room = room.data.room;
                 const payload = { room: room, userName: Cookies.get('userName') };

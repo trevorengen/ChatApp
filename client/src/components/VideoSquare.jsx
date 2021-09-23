@@ -16,14 +16,27 @@ const VideoSquare = (props) => {
     const [roomId, setRoomId] = useState(props.roomInfo._id);
     const [effect, setEffect] = useState('');
     const [effectValue, setEffectValue] = useState(1);
+    const [remoteEffect, setRemoteEffect] = useState('');
+    const [remoteEffectValue, setRemoteEffectValue] = useState(1);
 
     const handleChange = (event) => {
         setEffectValue(1);
-        setEffect(event.target.value);
+        setEffect(event.target.value, () => {
+            socket.emit('effectChange', {
+                roomId: roomId,
+                effect: effect,
+            });
+        });
     };
 
     const handleValueChange = (event) => {
-        setEffectValue(event.target.value);
+        setEffectValue(event.target.value, () => {
+            socket.emit('effectValueChange', { 
+                roomId: roomId, 
+                effectValue: effectValue 
+            });
+        });
+
     }
 
     const handleCall = async (e) => {
@@ -79,6 +92,15 @@ const VideoSquare = (props) => {
             console.log(candidate);
             rtcPeerConnection.addIceCandidate(candidate);
         });
+
+        props.socket.on('effectChange', (effect) => {
+            setRemoteEffect(effect);
+            setRemoteEffectValue(1);
+        });
+
+        props.socket.on('effectValueChange', (effectValue) => {
+            setRemoteEffectValue(effectValue);
+        })
 
         // FUNCTIONS BELOW
 
@@ -160,7 +182,13 @@ const VideoSquare = (props) => {
             borderRadius: '10px', padding: '30px', display: 'flex', justifyContent: 'space-evenly',
             flexDirection: 'column'}}
         >
-            <video id='remoteVid' autoPlay preload='auto' controls style={{margin: '10px 0', borderRadius: '15px'}}>
+            <video id='remoteVid' autoPlay preload='auto' controls style={{margin: '10px 0', borderRadius: '15px', 
+                WebkitFilter: remoteEffect === 'blur' ? 'blur('+remoteEffectValue+'px)' :  
+                remoteEffect === 'grayscale' ? 'grayscale('+remoteEffectValue+')' : 
+                remoteEffect === 'saturate' ? 'saturate('+remoteEffectValue+')' :
+                remoteEffect === 'negative' ? 'invert('+remoteEffectValue+')' : 
+                remoteEffect === 'sepia' ? 'sepia('+remoteEffectValue+')' :
+                remoteEffect === 'contrast' ? 'contrast('+remoteEffectValue+')' : ''}}>
             </video>
 
             <video id='localVid' autoPlay preload='auto' controls 

@@ -6,7 +6,6 @@ import React, { useState } from 'react';
 
 function App() {
 
-  const [userName, setUserName] = useState('Guest-' + Math.random().toString(36).slice(2));
   const [newRoomOpen, setNewRoomOpen] = useState(false);
 
   return (
@@ -17,7 +16,7 @@ function App() {
             <Chatroom newRoomOpen={newRoomOpen} setNewRoomOpen={setNewRoomOpen} />
           </Route>
           <Route path='/'>
-            <Dashboard setUserName={setUserName} newRoomOpen={newRoomOpen} setNewRoomOpen={setNewRoomOpen} />
+            <Dashboard newRoomOpen={newRoomOpen} setNewRoomOpen={setNewRoomOpen} />
           </Route>
         </Switch>
       </Router>

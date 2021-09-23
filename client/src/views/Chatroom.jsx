@@ -98,7 +98,7 @@ const Chatroom = (props) => {
 
     return (
         <>
-            <NavBar pageHeader={''} setOpen={setOpen} open={open} setLoginOpen={setLoginOpen} loginOpen={loginOpen} 
+            <NavBar setOpen={setOpen} open={open} setLoginOpen={setLoginOpen} loginOpen={loginOpen} 
             registerOpen={registerOpen} setRegisterOpen={setRegisterOpen} isLoggedIn={isLoggedIn}
             count={count} setCount={setCount} userRooms={userRooms} setUserRooms={setUserRooms} setLoggedIn={setIsLoggedIn}
             pageHeader={roomInfo.isDm ? (roomInfo.host === Cookies.get('userName') ? roomInfo.users[1] : roomInfo.host) : roomInfo.roomName} />
@@ -135,7 +135,6 @@ const Chatroom = (props) => {
                         <TextField
                             focused
                             fullWidth
-                            id="outlined-multiline-flexible"
                             multiline
                             id='messageBox'
                             onKeyPress={e => e.key === 'Enter' ? handleSubmit(e) : null}

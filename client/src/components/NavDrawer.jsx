@@ -57,6 +57,8 @@ const NavDrawer = (props) => {
                                 onClick={e => handleRoomLink(e, room._id)}>{room.host === Cookies.get('userName') ? room.users[1] : room.host}</Link>
                             </ListItem>
                         )
+                    } else {
+                        return '';
                     }
                 })}
             </List>
@@ -78,6 +80,8 @@ const NavDrawer = (props) => {
                                 onClick={e => handleRoomLink(e, room._id)}>{room.roomName}</Link>
                             </ListItem>
                         )
+                    } else {
+                        return '';
                     }
                 })}
             </List>

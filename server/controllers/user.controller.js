@@ -70,16 +70,18 @@ module.exports.getOneUserByName = (req, res) => {
 module.exports.addRoomToUser = (req, res) => {
     User.find({ userName: req.body.userName })
         .then(user => {
-            for (var i=0; i<user[0].rooms.length; i++) {            
+            console.log(req.body);
+            for (var i=0; i<user[0].rooms.length; i++) {     
                 if (req.body.room.roomName.toLowerCase() === user[0].rooms[i].roomName.toLowerCase()) {
                     return res.status(400).json({ error: 'User already in room!' });
                 }
             } 
             User.updateOne({ userName: req.body.userName }, { $push: { rooms: req.body.room} }, { new: true })
                 .then(user => res.json({ user: user }))
+                .catch(err => res.status(400).json({ error: err }));
             Room.updateOne({ _id: req.body.room._id }, { $push: { users: user } }, { new: true })
                 .then(room => res.json({ room: room }))
-                .catch(err => res.json(err))
+                .catch(err => res.json({ error: err }));
         })
         .catch(err => {
             console.log(err);

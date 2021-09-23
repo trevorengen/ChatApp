@@ -22,9 +22,10 @@ const CallDialog = (props) => {
 
     const handleAccept = (e) => {
         e.preventDefault();
-        axios.get('http://localhost:8000/room/' + props.caller + '/' + Cookies.get('userName'), { withCredentials: true })
+        axios.get('http://localhost:8000/room/dmroom/' + props.caller + '/' + Cookies.get('userName'), { withCredentials: true })
             .then(room => {
-                history.push('/chatroom/' + room.data.room[0]._id);
+                history.push('/chatroom/' + room.data.room[0]._id)
+                console.log('hello');
                 socket.emit('call', room.data.room[0]._id);
             })
             .catch(err => console.log(err));
