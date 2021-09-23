@@ -19,7 +19,10 @@ require('./server/routes/room.route')(app);
 const port = 8000;
 const server = app.listen(port, () => console.log(`Listening on port ${port}.`));
 
-const io = require('socket.io')(server, { cors: true });
+const io = require('socket.io')(server, { cors: {
+    origin: 'http://3.129.195.240:3000',
+    methods: ['GET', 'POST'],
+} });
 
 io.on('connection', socket => {
 
