@@ -8,7 +8,7 @@ const VideoSquare = (props) => {
     const constraints = {
         video: { width: 480, height: 320},
         audio: true,
-    }
+    };
     const configuration = { iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
@@ -21,23 +21,20 @@ const VideoSquare = (props) => {
 
     const handleChange = (event) => {
         setEffectValue(1);
-        setEffect(event.target.value, () => {
-            socket.emit('effectChange', {
-                roomId: roomId,
-                effect: effect,
-            });
+        setEffect(event.target.value);
+        props.socket.emit('effectChange', {
+            roomId: roomId,
+            effect: event.target.value,
         });
     };
 
     const handleValueChange = (event) => {
-        setEffectValue(event.target.value, () => {
-            socket.emit('effectValueChange', { 
-                roomId: roomId, 
-                effectValue: effectValue 
-            });
+        setEffectValue(event.target.value);
+        props.socket.emit('effectValueChange', { 
+            roomId: roomId, 
+            effectValue: effectValue 
         });
-
-    }
+    };
 
     const handleCall = async (e) => {
         e.preventDefault();
