@@ -62,7 +62,7 @@ module.exports.getOneUser = (req, res) => {
 module.exports.getOneUserByName = (req, res) => {
     User.findOne({ userName: req.params.name })
         .then(user => res.json({ user: user }))
-        .catch(err => res.json({ error: err }));
+        .catch(err => res.status(400).json({ error: err }));
 };
 
 // UPDATE
@@ -71,6 +71,7 @@ module.exports.addRoomToUser = (req, res) => {
         .then(user => {
             var alreadyHas = false;
             for (var i=0; i<user[0].rooms.length; i++) {
+                console.log('here');
                 if (req.body.room.roomName.toLowerCase() === user[0].rooms[i].roomName.toLowerCase()) {
                     return res.status(400).json({ error: 'User already in room!' });
                 }
@@ -88,18 +89,18 @@ module.exports.updateUserSocket = (req, res) => {
         .then(user => {
             res.json({ user: user });
         })
-        .catch(err => res.json({ error: err }));
+        .catch(err => res.status(400).json({ error: err }));
 };
 
 // DELETE
 module.exports.deleteAllUsers = (req, res) => {
     User.deleteMany({})
         .then(response => res.json({ response: response }))
-        .catch(err => { error: err });
+        .catch(err => res.status(400).json({ error: err }));
 };
 
 module.exports.deleteOneUser = (req, res) => {
     User.deleteOne({ id: req.params.id })
         .then(response => res.json({ response: response }))
-        .catch(err => res.json({ error: err }));
+        .catch(err => res.status(400).json({ error: err }));
 };

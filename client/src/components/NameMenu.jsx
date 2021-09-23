@@ -91,7 +91,6 @@ const NameMenu = (props) => {
             >
                 <MenuItem onClick={() => handleDm(props.userName)}>Direct message</MenuItem>
                 <MenuItem onClick={() => handleCall(props.userName)}>Call</MenuItem>
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
             </Menu>
             <Snackbar message='You already have a DM with this person!' 
                 open={snack}

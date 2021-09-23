@@ -13,11 +13,12 @@ import { useHistory } from 'react-router';
 const CreateRoom = (props) => {
 
     const [roomName, setRoomName] = useState('');
+    const [error, setError] = useState('');
     const history = useHistory();
 
     const close = () => {
         props.setNewRoomOpen(false);
-    }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -31,7 +32,9 @@ const CreateRoom = (props) => {
                 setRoomName('');
                 props.setOpen(false);
             })
-            .catch(err => console.log(err.response));
+            .catch(err => {
+                setError(err.response.data);
+            });
     };
 
     return (
@@ -43,6 +46,8 @@ const CreateRoom = (props) => {
                     <small style={{color: 'red'}}></small>
                 </DialogContentText>
                 <TextField
+                    error={error === '' ? false : true}
+                    helperText={error === '' ? '' : error}
                     fullWidth
                     autoFocus
                     margin='dense'

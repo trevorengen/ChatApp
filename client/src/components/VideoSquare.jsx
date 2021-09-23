@@ -1,12 +1,11 @@
 import { Button } from '@mui/material';
-import Cookies from 'js-cookie';
 import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
+import { Box } from '@mui/system';
 
 const VideoSquare = (props) => {
 
     const constraints = {
-        video: { width: 480, height: 260},
+        video: { width: 480, height: 320},
         audio: true,
     }
     const configuration = { iceServers: [
@@ -15,8 +14,16 @@ const VideoSquare = (props) => {
     ]};
     const [roomId, setRoomId] = useState(props.roomInfo._id);
 
-    const handleCall = (e) => {
+    const handleCall = async (e) => {
         e.preventDefault();
+        var localVid = document.getElementById('localVid');
+        try {
+            var stream = await navigator.mediaDevices.getUserMedia(constraints)
+            var localStream = stream;
+            localVid.srcObject = stream;
+        } catch (err) {
+            console.log('Error getting local media.', err);
+        };
         props.socket.emit('call', roomId);
     }
 
@@ -135,16 +142,22 @@ const VideoSquare = (props) => {
     }, []);
 
     return (
-        <>
-            <video id='remoteVid' autoPlay>
+        <Box 
+            style={{minHeight: '500px', minWidth: '300px',
+            backgroundColor: '#dce7e8', maxHeight: '600px',
+            marginTop: '40px', overflowY: 'none', alignItems: 'space-evenly',
+            borderRadius: '10px', padding: '30px', display: 'flex', justifyContent: 'space-evenly',
+            flexDirection: 'column'}}
+        >
+            <video id='remoteVid' autoPlay preload='auto' controls style={{margin: '10px 0', borderRadius: '15px'}}>
 
             </video>
 
-            <video id='localVid' autoPlay>
+            <video id='localVid' autoPlay preload='auto' controls style={{margin: '10px 0', borderRadius: '15px'}}>
 
             </video>
-            <Button onClick={e => handleCall(e)}>Call</Button>
-        </>
+            <Button onClick={e => handleCall(e)} variant='contained' color='secondary'>Call</Button>
+        </Box>
     );
 };
 
