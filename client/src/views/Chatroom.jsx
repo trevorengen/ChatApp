@@ -25,7 +25,7 @@ const Chatroom = (props) => {
         color: theme.palette.text.secondary,
     }));
 
-    const [socket] = useState(() => io());
+    const [socket] = useState(() => io('http://3.129.195.240:8000/', { transports: WebSocket }));
     const [message, setMessage] = useState('');
     const [allMessages, setAllMessages] = useState([]);
     const [open, setOpen] = useState(false);
