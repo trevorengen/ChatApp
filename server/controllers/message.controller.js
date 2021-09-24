@@ -10,7 +10,13 @@ module.exports.createMessage = (req, res) => {
 // RETRIEVE
 module.exports.getAllFromRoom = (req, res) => {
     Message.find({ roomId: req.params.roomid })
-        .then(messages => res.json({ messages: messages }))
+        .then(messages => {
+            if (messages.length > 40) {
+                return res.json({ messages: messages.slice(-40, messages.length) });
+            } else {
+                return res.json({ messages: messages });
+            };
+        })
         .catch(err => res.status(400).json({ error: err }));
 };
 

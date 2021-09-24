@@ -24,7 +24,7 @@ module.exports.loginUser = async (req, res) => {
 
 module.exports.isLoggedIn = (req, res) => {
     res.sendStatus(200);
-}
+};
 
 // LOGOUT
 module.exports.logoutUser = (req, res) => {
@@ -68,6 +68,9 @@ module.exports.getOneUserByName = (req, res) => {
 
 // UPDATE
 module.exports.addRoomToUser = (req, res) => {
+    if (req.body.room === null) {
+        return res.status(400).json({ error: 'Room does not exist!' });
+    }
     User.find({ userName: req.body.userName })
         .then(user => {
             if (user[0].rooms[0] !== null) {
@@ -77,24 +80,20 @@ module.exports.addRoomToUser = (req, res) => {
                     };
                 };
             };
+
             User.updateOne({ userName: req.body.userName }, { $push: { rooms: req.body.room} }, { new: true })
-                .then(user => res.json({ user: user }))
                 .catch(err => res.status(400).json({ error: err }));
-            Room.updateOne({ _id: req.body.room._id }, { $push: { users: user } }, { new: true })
+
+            Room.updateOne({ _id: req.body.room._id }, { $push: { users: user[0]._id } }, { new: true })
                 .then(room => res.json({ room: room }))
-                .catch(err => res.json({ error: err }));
+                .catch(err => res.status(400).json({ error: err }));
         })
-        .catch(err => {
-            console.log(err);
-            return res.status(400).json({ error: err });
-        });
+        .catch(err => res.status(400).json({ error: err }));
 };
 
 module.exports.updateUserSocket = (req, res) => {
     User.updateOne({ userName: req.body.userName }, { currentSocket: req.body.socket }, { new: true })
-        .then(user => {
-            res.json({ user: user });
-        })
+        .then(user => res.json({ user: user }))
         .catch(err => res.status(400).json({ error: err }));
 };
 

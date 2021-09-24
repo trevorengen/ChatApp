@@ -1,5 +1,4 @@
 const Room = require('../models/room.model');
-const { $where } = require('../models/user.model');
 const User = require('../models/user.model');
 
 // CREATE
@@ -28,15 +27,20 @@ module.exports.getRoomById = (req, res) => {
 };
 
 module.exports.getRoomByName = (req, res) => {
-    console.log('here');
     Room.findOne({ roomName: new RegExp(`^${req.params.name}$`, 'i') })
         .then(room => res.json({ room: room }))
         .catch(err => res.status(400).json({ error: err }));
 };
 
 module.exports.getDmByUsers = (req, res) => {
-    Room.find({ users: [req.params.user1, req.params.user2] })
+    Room.find({ $and: [ { users: { $all: [ req.params.user1, req.params.user2 ] } }, { isDm: true } ] } )
         .then(room => res.json({ room: room }))
+        .catch(err => res.status(400).json({ error: err }));
+};
+
+module.exports.getAllRooms = (req, res) => {
+    Room.find({})
+        .then(rooms => res.json({ rooms: rooms }))
         .catch(err => res.status(400).json({ error: err }));
 };
 
@@ -44,7 +48,7 @@ module.exports.getDmByUsers = (req, res) => {
 module.exports.updateRoomUsers = (req, res) => {
     Room.findById(req.params.id)
         .then(room => {
-            const newList = [req.body, ...room.users];
+            const newList = [req.body._id, ...room.users];
             Room.updateOne({ _id: req.params.id }, { users: newList }, { new: true })
                 .then(room => res.json({ room: room }))
                 .catch(err => res.status(400).json({ error: err }));
@@ -55,9 +59,10 @@ module.exports.updateRoomUsers = (req, res) => {
 // DELETE
 module.exports.deleteAllRooms = (req, res) => {
     Room.deleteMany({})
-        .then(response => res.json({ response: response }))
-        .catch(err => res.status(400).json({ error: err }));
-    User.updateMany({}, { rooms: [] }, { new: true })
-        .then(response => res.json({ response: response }))
+        .then(response => {
+            User.updateMany({}, { rooms: [] }, { new: true })
+                .then(response => res.json({ response: response }))
+                .catch(err => res.status(400).json({ error: err }));
+        })
         .catch(err => res.status(400).json({ error: err }));
 };

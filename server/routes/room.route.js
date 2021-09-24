@@ -5,6 +5,7 @@ module.exports = app => {
     app.get('/room/name/:name', Room.getRoomByName);
     app.get('/room/dmroom/:user1/:user2', Room.getDmByUsers);
     app.get('/room/:id', Room.getRoomById);
+    app.get('/room/', Room.getAllRooms);
 
     app.post('/room/create', Room.createNewRoom);
 
