@@ -46,11 +46,10 @@ const Chatroom = (props) => {
         }
         const messageObj = { userName: Cookies.get('userName'), message: messageBox.value, roomId: id };
         e.preventDefault();
-        socket.emit('sendMessage', messageObj);
         setAllMessages([messageObj, ...allMessages]);
         messageBox.value = '';
         axios.post('http://localhost:8000/message/create', messageObj, { withCredentials: true })
-            .then(res => res)
+            .then(res => socket.emit('sendMessage', messageObj))
             .catch(err => console.log(err.response));
     };
 

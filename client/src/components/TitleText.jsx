@@ -7,8 +7,7 @@ const TitleText = () => {
     return (
         <Typography variant='h1' style={{height: '150px', margin: '50px 0'}}>
             <Typical 
-                steps={['Hi', 1000, 'Welcome to viddy chat', 2000]}
-                loop={1}
+                steps={['Hi', 500, 'Welcome to viddy chat', 3000]}
                 wrapper='p'
             />
         </Typography>);
