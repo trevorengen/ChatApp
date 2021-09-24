@@ -9,6 +9,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useHistory } from 'react-router';
+import { Switch, FormGroup, FormControlLabel } from '@mui/material';
 
 const NavBar = (props) => {
 
@@ -49,6 +50,14 @@ const NavBar = (props) => {
         history.push('/');
     };
 
+    const handleSwitch = (e) => {
+        if (props.darkMode) {
+            props.setDarkMode(false);
+        } else {
+            props.setDarkMode(true);
+        }
+    }
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
@@ -66,9 +75,14 @@ const NavBar = (props) => {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         {props.pageHeader}
                     </Typography>
+                    <FormGroup>
+                        <FormControlLabel style={{fontFamily: 'Open Sans', paddingTop: '1px', marginRight: '30px'}} 
+                        control={<Switch color='secondary' defaultChecked={false}
+                        checked={props.darkMode} onChange={e => handleSwitch(e)} />} label="DARKMODE" />
+                    </FormGroup>
                     {props.isLoggedIn ? (
                         <>
-                            {props.dashboard ? '' : <Button color='inherit' onClick={e => goHome(e)}>Home</Button>}
+                            {props.dashboard ? '' : <Button color='inherit' onClick={e => goHome(e)} style={{marginRight: '30px'}}>Home</Button>}
                             <Button color="inherit" onClick={e => handleLogoutClick(e)}>Logout</Button>
                         </>
                     ) : (

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
-import { Button } from '@mui/material';
+import { Button, Paper } from '@mui/material';
 import { useHistory } from 'react-router';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Snackbar } from '@mui/material';
+import TitleText from './TitleText';
 
-const Greeting = () => {
+const Greeting = (props) => {
 
     const [roomCode, setRoomCode] = useState('');
     const [noRoom, setNoRoom] = useState(false);
@@ -42,18 +43,21 @@ const Greeting = () => {
     }
 
     return (
-        <div>
-            <h1 style={{marginTop: '150px'}}>Sign Up Then Enter a Room Code to Get Started</h1>
+        <Paper elevation={4} style={{margin: '50px', padding: '100px 0'}}>
+            <TitleText />
             <TextField 
-                style={{minWidth: '400px'}}
+                style={{minWidth: '400px', backgroundColor: 'rgba(166, 212, 250, 0.2)', borderRadius: '4px'}}
                 type='text'
                 value={roomCode}
                 onChange={e => setRoomCode(e.target.value)}
+                disabled={props.isLoggedIn ? false : true}
+                placeholder={props.isLoggedIn ? 'Enter a Room Name' : 'Login or Signup!'}
             />
             <Button
                 onClick={e => onSubmit(e)}
                 variant='contained'
                 style={{marginLeft: '15px', height: '53px', marginTop: '1px'}}
+                disabled={props.isLoggedIn ? false : true}
             >Enter</Button>
             <Snackbar message='You are already in this room!' 
                 open={noRoom}
@@ -61,7 +65,7 @@ const Greeting = () => {
             <Snackbar message={error}
                 open={noRoom}
                 onClose={handleSnackClose} />
-        </div>
+        </Paper>
     );
 };
 

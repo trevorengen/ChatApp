@@ -20,6 +20,7 @@ const NavDrawer = (props) => {
 
     const handleRoomLink = (e, roomId) => {
         e.preventDefault();
+        close();
         history.push('/chatroom/' + roomId);
     };
 

@@ -97,9 +97,11 @@ const Chatroom = (props) => {
     return (
         <>
             <NavBar setOpen={setOpen} open={open} setLoginOpen={setLoginOpen} loginOpen={loginOpen} 
-            registerOpen={registerOpen} setRegisterOpen={setRegisterOpen} isLoggedIn={isLoggedIn}
-            count={count} setCount={setCount} userRooms={userRooms} setUserRooms={setUserRooms} setLoggedIn={setIsLoggedIn}
-            pageHeader={roomInfo.isDm ? (roomInfo.host === Cookies.get('userName') ? roomInfo.users[1] : roomInfo.host) : roomInfo.roomName} />
+                registerOpen={registerOpen} setRegisterOpen={setRegisterOpen} isLoggedIn={isLoggedIn}
+                count={count} setCount={setCount} userRooms={userRooms} setUserRooms={setUserRooms} setLoggedIn={setIsLoggedIn}
+                pageHeader={roomInfo.isDm ? (roomInfo.host === Cookies.get('userName') ? roomInfo.users[1] : roomInfo.host) : roomInfo.roomName}
+                darkMode={props.darkMode} setDarkMode={props.setDarkMode} 
+            />
             <CreateRoom newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen} setOpen={setOpen} />
             <NavDrawer open={open} setOpen={setOpen} userRooms={userRooms} setUserRooms={setUserRooms}
                 isLoggedIn={isLoggedIn} newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen} />
@@ -107,8 +109,8 @@ const Chatroom = (props) => {
                 <Grid container spacing={3} alignItems='stretch'>
                     {roomInfo.isDm ? (<Grid item xlg={2} lg={4} md={6} sm={12} xs={12}><VideoSquare socket={socket} style={{marginRight: '30px'}} roomInfo={roomInfo} /></Grid>) : ''}
                     <Grid item xlg={roomInfo.isDm ? 12 : 10} lg={roomInfo.isDm ? 8 : 12} md={roomInfo.isDm ? 6 : 12} sm={roomInfo.isDm ? 12 : 12} xs={roomInfo.isDm ? 12 : 12}>
-                    <Box 
-                        style={{backgroundColor: '#dce7e8', maxHeight: '500px',
+                    <Paper 
+                        style={{maxHeight: '500px',
                         marginTop: '40px', overflowY: 'auto', minHeight: '60vh',
                         borderRadius: '10px', padding: '30px', display: 'flex',
                         flexDirection: 'column-reverse'}}>
@@ -119,7 +121,7 @@ const Chatroom = (props) => {
                                 spacing={2}
                             >
                                     {allMessages.slice(0,40).map((message, index) => {
-                                        return (<Item key={index} style={{backgroundColor: message.userName === Cookies.get('userName') ? '#A0E7E5' : '#FBE7C6'}}>
+                                        return (<Item key={index} style={{backgroundColor: message.userName === Cookies.get('userName') ? 'rgba(166, 212, 250, 0.5)' : 'rgba(255, 214, 153, 0.5)' }}>
                                             <h4 style={{marginLeft: '5px', display: 'flex', flexFlow: 'row nowrap', alignItems: 'center',}}>
                                                 <NameMenu userName={message.userName} socket={socket} />  
                                                 <small> - {message.createdAt ? new Date(message.createdAt).toLocaleString() : new Date().toLocaleString()}</small>
@@ -129,11 +131,12 @@ const Chatroom = (props) => {
                                     })}
 
                             </Stack>
-                        </Box>
+                        </Paper>
                         <TextField
                             focused
                             fullWidth
                             multiline
+                            variant='outlined'
                             id='messageBox'
                             onKeyPress={e => e.key === 'Enter' ? handleSubmit(e) : null}
                             maxRows={4}
@@ -142,7 +145,7 @@ const Chatroom = (props) => {
                                     <Button variant='contained' onClick={e => handleSubmit(e)}>Submit</Button>
                                     </InputAdornment>,
                             }}
-                            style={{marginBottom: '40px'}}
+                            style={{marginBottom: '40px', width: '99%', marginTop: '5px', backgroundColor: 'rgba(166, 212, 250, 0.2)', borderRadius: '4px'}}
                         />   
                         </Grid>        
                 </Grid>

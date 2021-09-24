@@ -37,7 +37,7 @@ const Dashboard = (props) => {
             <NavBar pageHeader={''} setOpen={setOpen} open={open} setLoginOpen={setLoginOpen} loginOpen={loginOpen} 
                 registerOpen={registerOpen} setRegisterOpen={setRegisterOpen} isLoggedIn={isLoggedIn}
                 count={count} setCount={setCount} userRooms={userRooms} setUserRooms={setUserRooms}  setLoggedIn={setIsLoggedIn}
-                dashboard={true} />
+                dashboard={true} darkMode={props.darkMode} setDarkMode={props.setDarkMode} />
             <NavDrawer open={open} setOpen={setOpen} isLoggedIn={isLoggedIn} 
                 newRoomOpen={props.newRoomOpen} setNewRoomOpen={props.setNewRoomOpen}
                 userRooms={userRooms} setUserRooms={setUserRooms} />
@@ -46,7 +46,7 @@ const Dashboard = (props) => {
                 setUserName={props.setUserName} />
             <RegisterDialog registerOpen={registerOpen} setRegisterOpen={setRegisterOpen}
                 count={count} setCount={setCount} />
-            <Greeting />
+            <Greeting isLoggedIn={isLoggedIn} />
         </>
         
     );

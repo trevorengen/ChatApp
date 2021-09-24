@@ -1,4 +1,4 @@
-import { Button, Grid, MenuItem, Select } from '@mui/material';
+import { Button, Grid, MenuItem, Paper, Select } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { TextField } from '@mui/material';
 import { Box } from '@mui/system';
@@ -197,14 +197,14 @@ const VideoSquare = (props) => {
     }, []);
 
     return (
-        <Box 
+        <Paper 
             style={{minHeight: '65vh', minWidth: '300px',
-            backgroundColor: '#dce7e8', maxHeight: '600px',
-            marginTop: '40px', overflowY: 'none', alignItems: 'space-evenly',
-            borderRadius: '10px', padding: '30px', display: 'flex', justifyContent: 'space-evenly',
+            maxHeight: '600px',
+            marginTop: '40px', overflowY: 'none', alignItems: 'space-around',
+            borderRadius: '10px', padding: '30px', display: 'flex', justifyContent: 'space-around',
             flexDirection: 'column'}}
         >
-            <video id='remoteVid' autoPlay preload='auto' controls style={{margin: '10px 0', borderRadius: '15px', 
+            <video id='remoteVid' autoPlay preload='auto' style={{margin: '10px 0', borderRadius: '15px', 
                 WebkitFilter: remoteEffect === 'blur' ? 'blur('+remoteEffectValue+'px)' :  
                 remoteEffect === 'grayscale' ? 'grayscale('+remoteEffectValue+')' : 
                 remoteEffect === 'saturate' ? 'saturate('+remoteEffectValue+')' :
@@ -213,7 +213,7 @@ const VideoSquare = (props) => {
                 remoteEffect === 'contrast' ? 'contrast('+remoteEffectValue+')' : ''}}>
             </video>
 
-            <video id='localVid' autoPlay preload='auto' controls 
+            <video id='localVid' autoPlay preload='auto' muted
                 style={{margin: '10px 0', borderRadius: '15px', 
                 WebkitFilter: effect === 'blur' ? 'blur('+effectValue+'px)' :  
                 effect === 'grayscale' ? 'grayscale('+effectValue+')' : 
@@ -223,7 +223,7 @@ const VideoSquare = (props) => {
                 effect === 'contrast' ? 'contrast('+effectValue+')' : ''}}
             >
             </video>
-            <Grid container spacing={1}>
+            <Grid container spacing={3}>
                 <Grid item xs={9}>
                     <Select
                         style={{width: '100%'}}
@@ -258,7 +258,7 @@ const VideoSquare = (props) => {
                 </Grid>
             </Grid>
             <Button onClick={e => handleCall(e)} variant='contained' color='secondary'>Call</Button>
-        </Box>
+        </Paper>
     );
 };
 

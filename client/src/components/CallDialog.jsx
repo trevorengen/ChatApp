@@ -25,8 +25,9 @@ const CallDialog = (props) => {
         axios.get('http://localhost:8000/room/dmroom/' + props.caller + '/' + Cookies.get('userName'), { withCredentials: true })
             .then(room => {
                 history.push('/chatroom/' + room.data.room[0]._id)
-                console.log('hello');
-                socket.emit('call', room.data.room[0]._id);
+                setTimeout(() => {
+                    socket.emit('call', room.data.room[0]._id);
+                }, 1000);
             })
             .catch(err => console.log(err));
         props.setCallOpen(false);
