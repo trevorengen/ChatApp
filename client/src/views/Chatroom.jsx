@@ -65,7 +65,7 @@ const Chatroom = (props) => {
             })
             .catch(err => console.log(err));
 
-        axios.get('http://localhost:8000/message/getmessages/' + id, { withCredentials: true })
+        axios.post('http://localhost:8000/message/getmessages/' + id, { withCredentials: true })
             .then(messages => {
                 setAllMessages(messages.data.messages.reverse())
             })
@@ -79,10 +79,8 @@ const Chatroom = (props) => {
         })
 
         socket.on('recieveMessage', (data) => {
-            axios.get('http://localhost:8000/message/getmessages/' + data, { withCredentials: true })
-                .then(messages => {
-                    setAllMessages([...messages.data.messages.reverse()])
-                })
+            axios.post('http://localhost:8000/message/getmessages/' + data, { withCredentials: true })
+                .then(messages => setAllMessages([...messages.data.messages.reverse()]))
                 .catch(err => console.log(err.response));
         });
 
@@ -121,8 +119,8 @@ const Chatroom = (props) => {
                                 spacing={2}
                             >
                                     {allMessages.slice(0,40).map((message, index) => {
-                                        return (<Item key={index}>
-                                            <h4 style={{marginLeft: '5px', display: 'flex', flexFlow: 'row nowrap', alignItems: 'center'}}>
+                                        return (<Item key={index} style={{backgroundColor: message.userName === Cookies.get('userName') ? '#A0E7E5' : '#FBE7C6'}}>
+                                            <h4 style={{marginLeft: '5px', display: 'flex', flexFlow: 'row nowrap', alignItems: 'center',}}>
                                                 <NameMenu userName={message.userName} socket={socket} />  
                                                 <small> - {message.createdAt ? new Date(message.createdAt).toLocaleString() : new Date().toLocaleString()}</small>
                                             </h4>

@@ -26,7 +26,7 @@ const CreateRoom = (props) => {
             .then(user => {
                 axios.post('http://localhost:8000/room/create', { 
                     roomName: roomName, 
-                    users: [user.data.user], 
+                    users: [user.data.user._id], 
                     isDm: false, 
                     host: user.data.user}, 
                     { withCredentials: true })

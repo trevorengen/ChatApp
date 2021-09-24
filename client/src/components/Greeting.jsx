@@ -27,7 +27,7 @@ const Greeting = () => {
                         if (err.response.data.error === undefined) {
                             setError('You have to be logged in to do that!');
                         } else {
-                            console.log(err.response);
+                            setError(err.response.data.error);
                         }
                         setRoomCode('');
                         setNoRoom(true);
