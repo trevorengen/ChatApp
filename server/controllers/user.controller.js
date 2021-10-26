@@ -9,11 +9,11 @@ require('dotenv').config();
 module.exports.loginUser = async (req, res) => {
     const user = await User.findOne({ email: req.body.email })
     if (user === null) {
-        return res.status(400).json('Email or password is incorrect.');
+        return res.status(400).json('Email or password incorrect.');
     };
     const passIsCorrect = await bcrypt.compare(req.body.password, user.password);
     if (!passIsCorrect) {
-        return res.status(400).json('Email or password is incorrect.')
+        return res.status(400).json('Email or password incorrect.')
     };
 
     const userToken = jwt.sign({ id: user._id }, process.env.SECRET_KEY);
