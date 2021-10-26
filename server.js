@@ -7,7 +7,7 @@ const { isObject } = require('util');
 const app = express();
 
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+app.use(cors({ credentials: true, origin: 'https://viddychat.trevorengen.com' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended : true }));
 app.use(express.static('public', ))
@@ -21,7 +21,7 @@ const port = 8000;
 const server = app.listen(port, () => console.log(`Listening on port ${port}.`));
 
 const io = require('socket.io')(server, { cors: {
-    origin: 'http://localhost:3000',
+    origin: 'https://viddychat.trevorengen.com',
 } });
 
 io.on('connection', socket => {
